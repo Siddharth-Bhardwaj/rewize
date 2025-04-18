@@ -1,6 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --shadow-input:
+    0px 2px 3px -1px rgba(0, 0, 0, 0.1), 0px 1px 0px 0px rgba(25, 28, 33, 0.02),
+    0px 0px 0px 1px rgba(25, 28, 33, 0.08);
+
+  /* 🌑 Base Colors */
+  --color-background: #171717;
+  --color-surface: #1f1f1f;
+  --color-border: #2a2a2a;
+
+  --color-primary: #ffffff;
+  --color-muted: #b3b3b3;
+
+  /* 🟢 Neon Green Theme */
+  --color-accent-green: #00ff88;
+  --color-accent-green-hover: #00e67a;
+  --color-accent-green-subtle: #00ff8855;
+  --color-success: #16ff6e;
+
+  /* 🟡 Neon Yellow Theme */
+  --color-accent-yellow: #f8ff3d;
+  --color-accent-yellow-hover: #e5f229;
+  --color-accent-yellow-subtle: #f8ff3d55;
+  --color-warning: #ffd92f;
+
+  /* 🔲 Neutral UI Elements */
+  --color-input-bg: #1f1f1f;
+  --color-input-border: #333333;
+  --color-modal-overlay: rgba(0, 0, 0, 0.6);
 }
