@@ -26,7 +26,7 @@ async function seedDatabase() {
       map[cat.name] = cat.id;
       return map;
     },
-    {} as Record<string, string>,
+    {} as Record<string, string>
   );
 
   // Seed credit cards
@@ -72,7 +72,7 @@ async function seedDatabase() {
       map[`${card.issuer} ${card.name}`] = card.id;
       return map;
     },
-    {} as Record<string, string>,
+    {} as Record<string, string>
   );
 
   // Seed card rewards
@@ -155,8 +155,7 @@ async function seedDatabase() {
   // Filter out rewards with undefined cardId or categoryId and convert rewardRate to string
   const validRewardData = rewardData
     .filter(
-      (reward) =>
-        reward.cardId !== undefined && reward.categoryId !== undefined,
+      (reward) => reward.cardId !== undefined && reward.categoryId !== undefined
     )
     .map((reward) => ({
       ...reward,

@@ -75,7 +75,7 @@ export async function POST(request: Request) {
 
       // Create missing categories
       const missingCategoryNames = categoryNames.filter(
-        (name) => !categoryNameToId.has(name),
+        (name) => !categoryNameToId.has(name)
       );
 
       for (const categoryName of missingCategoryNames) {
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
             ...reward,
             category,
           };
-        }),
+        })
       );
 
       createdRewards = rewardsWithCategories;
@@ -135,7 +135,7 @@ export async function POST(request: Request) {
         card: newCard[0],
         rewards: createdRewards,
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     // Handle validation errors
@@ -178,7 +178,7 @@ export async function PATCH(request: Request) {
     // Parse and validate request body
     const partialCardSchema = cardSchema.partial();
     const { rewards, ...cardData } = partialCardSchema.parse(
-      await request.json(),
+      await request.json()
     );
 
     // Update card details
@@ -209,7 +209,7 @@ export async function PATCH(request: Request) {
 
       // Create missing categories
       const missingCategoryNames = categoryNames.filter(
-        (name) => !categoryNameToId.has(name),
+        (name) => !categoryNameToId.has(name)
       );
 
       for (const categoryName of missingCategoryNames) {
@@ -261,7 +261,7 @@ export async function PATCH(request: Request) {
           const existingReward = await db.query.cardRewards.findFirst({
             where: and(
               eq(cardRewards.cardId, id),
-              eq(cardRewards.categoryId, categoryId),
+              eq(cardRewards.categoryId, categoryId)
             ),
           });
 
@@ -284,8 +284,8 @@ export async function PATCH(request: Request) {
               .where(
                 and(
                   eq(cardRewards.cardId, id),
-                  eq(cardRewards.categoryId, categoryId),
-                ),
+                  eq(cardRewards.categoryId, categoryId)
+                )
               )
               .returning();
 
@@ -325,7 +325,7 @@ export async function PATCH(request: Request) {
             ...reward,
             category,
           };
-        }),
+        })
       );
 
       updatedRewards = rewardsWithCategories;
