@@ -2,29 +2,22 @@ import { z } from "zod";
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "@/server/db";
 import { cardRewards, userCards } from "@/server/db/schema";
-import { auth } from "@/server/auth";
 
 // Define validation schema for recommendation input
 const recommendationSchema = z.object({
   categoryId: z.string().min(1),
+  userId: z.string().uuid().min(1), // Added userId to request body
 });
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-
-    // Check if user is authenticated
-    if (!session?.user) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     // Parse and validate request body
     const body: unknown = await request.json();
-    const { categoryId } = recommendationSchema.parse(body);
+    const { categoryId, userId } = recommendationSchema.parse(body);
 
     // Get user's cards
     const userCardsList = await db.query.userCards.findMany({
-      where: eq(userCards.userId, session.user.id),
+      where: eq(userCards.userId, userId),
       with: {
         card: true,
       },
@@ -43,7 +36,7 @@ export async function POST(request: Request) {
     // Find the best card for the category
     const bestRewards = await db.query.cardRewards.findMany({
       where: and(
-        eq(cardRewards.categoryId, categoryId),
+        eq(cardRewards.categoryId, categoryId)
         // Only include cards the user has
         // This is simplified - in SQL we'd use "IN" but here we're just finding all matching rewards
       ),
@@ -56,7 +49,7 @@ export async function POST(request: Request) {
 
     // Filter to only cards the user owns and get the best one
     const userRewards = bestRewards.filter((reward) =>
-      cardIds.includes(reward.cardId),
+      cardIds.includes(reward.cardId)
     );
 
     if (userRewards.length === 0) {
@@ -76,7 +69,7 @@ export async function POST(request: Request) {
 
     // Find the user card details to get last 4 digits etc.
     const userCardDetails = userCardsList.find(
-      (uc) => uc.cardId === bestCard.cardId,
+      (uc) => uc.cardId === bestCard.cardId
     );
 
     return Response.json({

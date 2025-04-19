@@ -2,27 +2,18 @@ import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/server/db";
 import { userCards, creditCards } from "@/server/db/schema";
-import { auth } from "@/server/auth";
 
 // Schema for adding a card to user's collection
 const addCardSchema = z.object({
   cardId: z.string().uuid().min(1),
+  userId: z.string().uuid().min(1), // Added userId to request body
 });
 
 // POST - Add a card to user's collection
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-
-    // Check authentication
-    if (!session?.user) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-
     // Parse and validate request body
-    const { cardId } = addCardSchema.parse(await request.json());
+    const { cardId, userId } = addCardSchema.parse(await request.json());
 
     // Check if the card exists
     const card = await db.query.creditCards.findFirst({
@@ -41,7 +32,7 @@ export async function POST(request: Request) {
     if (existingUserCard) {
       return Response.json(
         { error: "Card already added to your collection" },
-        { status: 409 },
+        { status: 409 }
       );
     }
 
@@ -69,21 +60,17 @@ export async function POST(request: Request) {
 // DELETE - Remove a card from user's collection
 export async function DELETE(request: Request) {
   try {
-    const session = await auth();
-
-    // Check authentication
-    if (!session?.user) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-
-    // Get card ID from query params
+    // Get params from URL
     const { searchParams } = new URL(request.url);
     const cardId = searchParams.get("cardId");
+    const userId = searchParams.get("userId");
 
     if (!cardId) {
       return Response.json({ error: "Card ID is required" }, { status: 400 });
+    }
+
+    if (!userId) {
+      return Response.json({ error: "User ID is required" }, { status: 400 });
     }
 
     // Check if the user-card association exists
@@ -94,7 +81,7 @@ export async function DELETE(request: Request) {
     if (!existingUserCard) {
       return Response.json(
         { error: "Card not found in your collection" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -111,16 +98,15 @@ export async function DELETE(request: Request) {
 }
 
 // GET - Get all cards for a user
-export async function GET(_request: Request) {
+export async function GET(request: Request) {
   try {
-    const session = await auth();
+    // Get userId from query params
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
 
-    // Check authentication
-    if (!session?.user) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    if (!userId) {
+      return Response.json({ error: "User ID is required" }, { status: 400 });
     }
-
-    const userId = session.user.id;
 
     // Get user's cards with card details
     const userCardList = await db.query.userCards.findMany({

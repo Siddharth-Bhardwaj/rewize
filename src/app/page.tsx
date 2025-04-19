@@ -17,41 +17,18 @@ import axios from "axios";
 
 export default function HomePage() {
   useEffect(() => {
-    const fn = async () => {
-      const res = await axios.post("/api/cards", {
-        name: "Chase Sapphire Preferred",
-        issuer: "Chase",
-        networkType: "Visa",
-        annualFee: "95",
-        description:
-          "Popular travel rewards card with bonus points on travel and dining",
-        rewards: [
-          {
-            categoryName: "Travel",
-            rewardRate: "5%",
-          },
-          {
-            categoryName: "Dining",
-            rewardRate: "3%",
-          },
-          {
-            categoryName: "Streaming",
-            rewardRate: "3%",
-            isRotatingReward: false,
-          },
-          {
-            categoryName: "Gas",
-            rewardRate: "2%",
-            isRotatingReward: true,
-            quarterActive: 2,
-          },
-        ],
-      });
-
-      console.log(res);
+    const fetchCards = async () => {
+      try {
+        const res = await axios.get<any>(
+          `/api/cards?id=8c45c75f-8205-4547-b763-a33b6ff56607`
+        );
+        console.log(res.data);
+      } catch (error) {
+        console.error("Error fetching cards:", error);
+      }
     };
 
-    fn();
+    void fetchCards();
   }, []);
 
   return (
