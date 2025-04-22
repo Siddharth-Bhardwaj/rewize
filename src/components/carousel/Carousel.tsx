@@ -12,8 +12,10 @@ import {
 import { GlareCard } from "../ui/glare-card";
 import { DotButton, useDotButton } from "./CarouselDotButton";
 
+import type { CardDetails } from "@/lib/types";
+
 type PropType = {
-  slides: number[];
+  slides: CardDetails[];
   options?: EmblaOptionsType;
 };
 
@@ -24,7 +26,7 @@ const Carousel: React.FC<PropType> = (props) => {
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
     useDotButton(emblaApi);
 
-  console.log(selectedIndex);
+  // console.log(selectedIndex);
 
   const {
     prevBtnDisabled,
@@ -37,10 +39,10 @@ const Carousel: React.FC<PropType> = (props) => {
     <section className="embla">
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
-          {slides.map((index) => (
+          {slides.map((card, index) => (
             <div className="embla__slide" key={index}>
               <div className="embla__slide__number">
-                <GlareCard key={index} bgImage="/BofA-default.jpeg" />
+                <GlareCard key={card.id} image={card.imageUrl ?? ""} />
               </div>
             </div>
           ))}

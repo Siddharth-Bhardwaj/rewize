@@ -7,12 +7,12 @@ import { FiPlus } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 
 import Loader from "@/components/Loader";
+import Button from "@/components/ui/button";
 import Container from "@/components/Container";
 import Carousel from "@/components/carousel/Carousel";
 import PageContainer from "@/components/PageContainer";
 
 import { type CardDetails } from "@/lib/types";
-import Button from "@/components/ui/button";
 
 type GetAllCardsResponse = {
   cards: CardDetails[];

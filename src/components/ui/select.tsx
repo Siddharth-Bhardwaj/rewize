@@ -7,8 +7,9 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import Loader from "../Loader";
 
 import { cn } from "@/lib/utils";
+import type { CardDetails } from "@/lib/types";
 
-type Option = {
+export type Option = CardDetails & {
   label: string;
   value: string;
 };
@@ -31,14 +32,14 @@ const Select: React.FC<SelectProps> = ({
   const [search, setSearch] = React.useState("");
 
   const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(search.toLowerCase()),
+    option.label.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
       <SelectPrimitive.Trigger
         className={cn(
-          "ring-border bg-surface hover:ring-accent-green focus:ring-accent-green inline-flex items-center justify-between gap-2 rounded-md px-4 py-2 text-sm font-medium text-white ring-1 focus:ring-2 focus:outline-none",
+          "ring-border bg-surface hover:ring-accent-green focus:ring-accent-green inline-flex items-center justify-between gap-2 rounded-md px-4 py-2 text-sm font-medium text-white ring-1 focus:ring-2 focus:outline-none"
         )}
       >
         <SelectPrimitive.Value placeholder={placeholder} />
@@ -80,7 +81,7 @@ const Select: React.FC<SelectProps> = ({
                       key={option.value}
                       value={option.value}
                       className={cn(
-                        "hover:bg-accent-green/20 focus:bg-accent-green/20 relative flex cursor-default items-center rounded-sm px-4 py-2 outline-none select-none",
+                        "hover:bg-accent-green/20 focus:bg-accent-green/20 relative flex cursor-default items-center rounded-sm px-4 py-2 outline-none select-none"
                       )}
                     >
                       <SelectPrimitive.ItemText>

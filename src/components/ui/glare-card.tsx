@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 const containerStyle: Record<string, string> = {
   "--m-x": "50%",
@@ -20,13 +19,11 @@ const containerStyle: Record<string, string> = {
 };
 
 export const GlareCard = ({
-  bgImage,
-  children,
+  image,
   className,
 }: {
-  bgImage?: string;
+  image?: string;
   className?: string;
-  children?: React.ReactNode;
 }) => {
   const isPointerInside = useRef(false);
   const refElement = useRef<HTMLDivElement>(null);
@@ -60,7 +57,6 @@ export const GlareCard = ({
 
   const updateStyles = () => {
     if (refElement.current) {
-      console.log(state.current);
       const { background, rotate, glare } = state.current;
       refElement.current?.style.setProperty("--m-x", `${glare.x}%`);
       refElement.current?.style.setProperty("--m-y", `${glare.y}%`);
@@ -127,14 +123,10 @@ export const GlareCard = ({
           <div
             className={cn(
               "flex h-full w-full flex-1 items-center justify-center rounded-[var(--radius)]",
-              className,
+              className
             )}
           >
-            <img
-              alt="card"
-              src={bgImage}
-              className="h-auto w-full rounded-lg"
-            />
+            <img alt="card" src={image} className="h-auto w-full rounded-lg" />
           </div>
           <div className="absolute inset-0 z-[1] rounded-[var(--radius)] bg-black/20" />
         </div>
