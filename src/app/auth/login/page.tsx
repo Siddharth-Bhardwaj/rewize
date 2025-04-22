@@ -1,18 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { FiArrowRight } from "react-icons/fi";
+import { useSearchParams } from "next/navigation";
 
 import Label from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import LabelInputContainer from "@/components/LabelInputContainer";
-import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("callbackUrl") ?? "/dashboard";
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -28,10 +30,13 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("/api/auth/login", formData);
+      const loginRes = await signIn("credentials", {
+        email,
+        password,
+        redirectTo,
+      });
 
-      console.log(res);
-      router.push("/");
+      console.log(loginRes);
     } catch (error) {
     } finally {
     }

@@ -3,7 +3,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { FiArrowRight } from "react-icons/fi";
+import { useSearchParams } from "next/navigation";
 
 import Label from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -11,6 +13,9 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import LabelInputContainer from "@/components/LabelInputContainer";
 
 const SignupLayout = () => {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("callbackUrl") ?? "/dashboard";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,9 +32,9 @@ const SignupLayout = () => {
 
   const handleSignup = async () => {
     try {
-      const res = await axios.post("/api/auth/signup", formData);
+      await axios.post("/api/auth/signup", formData);
 
-      console.log(res);
+      void signIn("credentials", { email, password, redirectTo });
     } catch (error) {
     } finally {
     }

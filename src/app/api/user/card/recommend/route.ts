@@ -1,19 +1,26 @@
 import { z } from "zod";
 import { eq, and, desc } from "drizzle-orm";
+
 import { db } from "@/server/db";
+import { auth } from "@/server/auth";
 import { cardRewards, userCards } from "@/server/db/schema";
 
 // Define validation schema for recommendation input
 const recommendationSchema = z.object({
   categoryId: z.string().min(1),
-  userId: z.string().uuid().min(1), // Added userId to request body
 });
 
 export async function POST(request: Request) {
   try {
     // Parse and validate request body
+    const session = await auth();
+    const userId = session?.user?.id;
     const body: unknown = await request.json();
-    const { categoryId, userId } = recommendationSchema.parse(body);
+    const { categoryId } = recommendationSchema.parse(body);
+
+    if (!userId) {
+      return Response.json({ error: "User ID is required" }, { status: 400 });
+    }
 
     // Get user's cards
     const userCardsList = await db.query.userCards.findMany({
@@ -23,7 +30,7 @@ export async function POST(request: Request) {
       },
     });
 
-    if (userCardsList.length === 0) {
+    if (!userCardsList?.length) {
       return Response.json({
         message:
           "You don't have any cards yet. Add cards to get recommendations.",
@@ -52,7 +59,7 @@ export async function POST(request: Request) {
       cardIds.includes(reward.cardId)
     );
 
-    if (userRewards.length === 0) {
+    if (!userRewards?.length) {
       return Response.json({
         message: "None of your cards offer rewards for this category.",
       });

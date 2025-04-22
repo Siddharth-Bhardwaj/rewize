@@ -1,7 +1,17 @@
 import React from "react";
 import PageContainer from "@/components/PageContainer";
+import { auth } from "@/server/auth";
+import { redirect } from "next/navigation";
 
-const AuthLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+const AuthLayout = async ({
+  children,
+}: Readonly<{ children: React.ReactNode }>) => {
+  const session = await auth();
+
+  if (session) {
+    redirect("/dashboard");
+  }
+
   return (
     <PageContainer className="items-center">
       <div className="border-border flex w-1/3 flex-col gap-y-8 rounded-xl border-2 p-8">

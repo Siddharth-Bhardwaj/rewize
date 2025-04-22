@@ -1,19 +1,26 @@
 import { z } from "zod";
 import { eq, and } from "drizzle-orm";
+
 import { db } from "@/server/db";
+import { auth } from "@/server/auth";
 import { userCards, creditCards } from "@/server/db/schema";
 
 // Schema for adding a card to user's collection
 const addCardSchema = z.object({
   cardId: z.string().uuid().min(1),
-  userId: z.string().uuid().min(1), // Added userId to request body
 });
 
 // POST - Add a card to user's collection
 export async function POST(request: Request) {
   try {
     // Parse and validate request body
-    const { cardId, userId } = addCardSchema.parse(await request.json());
+    const session = await auth();
+    const userId = session?.user?.id;
+    const { cardId } = addCardSchema.parse(await request.json());
+
+    if (!userId) {
+      return Response.json({ error: "User ID is required" }, { status: 400 });
+    }
 
     // Check if the card exists
     const card = await db.query.creditCards.findFirst({
@@ -60,10 +67,11 @@ export async function POST(request: Request) {
 // DELETE - Remove a card from user's collection
 export async function DELETE(request: Request) {
   try {
-    // Get params from URL
+    const session = await auth();
     const { searchParams } = new URL(request.url);
+
+    const userId = session?.user?.id;
     const cardId = searchParams.get("cardId");
-    const userId = searchParams.get("userId");
 
     if (!cardId) {
       return Response.json({ error: "Card ID is required" }, { status: 400 });
@@ -98,11 +106,10 @@ export async function DELETE(request: Request) {
 }
 
 // GET - Get all cards for a user
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    // Get userId from query params
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
+    const session = await auth();
+    const userId = session?.user?.id;
 
     if (!userId) {
       return Response.json({ error: "User ID is required" }, { status: 400 });
@@ -116,9 +123,12 @@ export async function GET(request: Request) {
       },
     });
 
-    return Response.json({
-      cards: userCardList.map((uc) => uc.card),
-    });
+    return Response.json(
+      {
+        cards: userCardList.map((uc) => uc.card),
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching user cards:", error);
     return Response.json({ error: "Internal server error" }, { status: 500 });

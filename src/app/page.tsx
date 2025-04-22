@@ -2,35 +2,11 @@
 
 import Link from "next/link";
 
-import { ShootingStars } from "@/components/ui/shooting-stars";
-import { StarsBackground } from "@/components/ui/stars-background";
-import { GlareCard } from "@/components/ui/glare-card";
-import Carousel from "@/components/carousel/Carousel";
-import { ContainerTextFlip } from "@/components/ui/container-text-flip";
 import Button from "@/components/ui/button";
 import PageContainer from "@/components/PageContainer";
-import { Input } from "@/components/ui/input";
-import Container from "@/components/Container";
-import CardDetailsContainer from "@/components/CardDetailsContainer";
-import { useEffect } from "react";
-import axios from "axios";
+import { ContainerTextFlip } from "@/components/ui/container-text-flip";
 
 export default function HomePage() {
-  useEffect(() => {
-    const fetchCards = async () => {
-      try {
-        const res = await axios.get<any>(
-          `/api/cards?id=8c45c75f-8205-4547-b763-a33b6ff56607`
-        );
-        console.log(res.data);
-      } catch (error) {
-        console.error("Error fetching cards:", error);
-      }
-    };
-
-    void fetchCards();
-  }, []);
-
   return (
     <PageContainer hero>
       <div className="flex flex-col items-center justify-center gap-6 md:flex-row md:items-end">
@@ -38,7 +14,9 @@ export default function HomePage() {
         <ContainerTextFlip words={["time", "profits", "savings"]} />
       </div>
 
-      <Button>Get Started</Button>
+      <Link href="/dashboard">
+        <Button>Get Started</Button>
+      </Link>
 
       {/* <div className="flex gap-x-8">
         <CardDetailsContainer />
@@ -61,17 +39,5 @@ export default function HomePage() {
     //     {/* <GlareCard bgImage="/amex-gold.png" />
     //     <GlareCard bgImage="/BofA-default.jpeg" />
     //     <GlareCard bgImage="/chase-freedom-unlimited.png" /> */}
-
-    //     <div className="flex flex-wrap items-end justify-center gap-6">
-    //       <span>Maximize your </span>
-    //       <ContainerTextFlip words={["savings", "rewards", "profits"]} />
-    //     </div>
-
-    //     <Button>Get Started</Button>
-    //   </div>
-
-    //   <ShootingStars />
-    //   <StarsBackground />
-    // </main>
   );
 }
