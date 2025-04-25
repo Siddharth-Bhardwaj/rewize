@@ -21,6 +21,7 @@ const SignupLayout = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { name, email, password } = formData;
 
@@ -32,11 +33,19 @@ const SignupLayout = () => {
 
   const handleSignup = async () => {
     try {
+      setLoading(true);
+
       await axios.post("/api/auth/signup", formData);
 
-      void signIn("credentials", { email, password, redirectTo });
+      void signIn("credentials", {
+        email,
+        password,
+        redirectTo,
+        redirect: false,
+      });
     } catch (error) {
     } finally {
+      setLoading(false);
     }
   };
 
@@ -69,9 +78,15 @@ const SignupLayout = () => {
         </LabelInputContainer>
       </div>
 
-      <PrimaryButton handleClick={handleSignup}>Sign Up</PrimaryButton>
+      <PrimaryButton
+        loading={loading}
+        disabled={loading}
+        handleClick={handleSignup}
+      >
+        Sign Up
+      </PrimaryButton>
 
-      <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
+      <div className="my-4 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent md:my-8 dark:via-neutral-700" />
 
       <span className="text-center text-sm tracking-wide text-white/60">
         Already have an account?{" "}

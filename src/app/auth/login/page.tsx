@@ -19,6 +19,7 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { email, password } = formData;
 
@@ -30,15 +31,19 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     try {
+      setLoading(true);
+
       const loginRes = await signIn("credentials", {
         email,
         password,
         redirectTo,
+        redirect: false,
       });
 
       console.log(loginRes);
     } catch (error) {
     } finally {
+      setLoading(false);
     }
   };
 
@@ -66,9 +71,15 @@ const LoginPage = () => {
         </LabelInputContainer>
       </div>
 
-      <PrimaryButton handleClick={handleLogin}>Login</PrimaryButton>
+      <PrimaryButton
+        loading={loading}
+        disabled={loading}
+        handleClick={handleLogin}
+      >
+        Login
+      </PrimaryButton>
 
-      <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
+      <div className="my-4 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent md:my-8 dark:via-neutral-700" />
 
       <span className="text-center text-sm tracking-wide text-white/60">
         Don&apos;t have an account yet?{" "}
