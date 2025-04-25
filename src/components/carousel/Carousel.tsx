@@ -9,24 +9,29 @@ import {
   NextButton,
   usePrevNextButtons,
 } from "./CarouselArrowButtons";
+import LoadingCard from "../LoadingCard";
 import { GlareCard } from "../ui/glare-card";
 import { DotButton, useDotButton } from "./CarouselDotButton";
 
-import type { CardDetails } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import type { CardDetails, CardRecommendation } from "@/lib/types";
 
 type PropType = {
-  slides: CardDetails[];
+  loading?: boolean;
+  className?: string;
+  hideControls?: boolean;
   options?: EmblaOptionsType;
+  slides: (CardDetails | CardRecommendation)[];
 };
 
+type Slide = CardDetails | CardRecommendation;
+
 const Carousel: React.FC<PropType> = (props) => {
-  const { slides, options } = props;
+  const { slides, options, loading, className, hideControls } = props;
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
 
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
     useDotButton(emblaApi);
-
-  // console.log(selectedIndex);
 
   const {
     prevBtnDisabled,
@@ -36,30 +41,60 @@ const Carousel: React.FC<PropType> = (props) => {
   } = usePrevNextButtons(emblaApi);
 
   return (
-    <section className="embla">
+    <section className={cn("embla", "w-full", className)}>
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
-          {slides.map((card, index) => (
-            <div className="embla__slide" key={index}>
-              <div className="embla__slide__number">
-                <GlareCard key={card.id} image={card.imageUrl ?? ""} />
-              </div>
-            </div>
-          ))}
+          {/* TODO: fix animation */}
+          {loading && <LoadingCard />}
+
+          {!loading &&
+            slides.map((card: Slide | undefined, index) => {
+              const key =
+                typeof card === "object" && card !== null
+                  ? "id" in card
+                    ? card.id
+                    : "cardId" in card
+                      ? card.cardId + index
+                      : index
+                  : index;
+
+              return (
+                <div className="embla__slide" key={key}>
+                  <div className="embla__slide__number">
+                    {card?.imageUrl && (
+                      <GlareCard image={card.imageUrl ?? ""} />
+                    )}
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
 
-      {/* <div className="">
-        <span className="text-base tracking-wide">This is your savings!</span>
-      </div> */}
-
-      <div className="embla__controls">
-        <div className="embla__buttons">
-          <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-          <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
+      {slides?.[selectedIndex] && "message" in slides[selectedIndex] && (
+        <div className="flex justify-center">
+          <span className="text-primary text-center text-sm tracking-wide">
+            {slides[selectedIndex]?.message ?? ""}
+          </span>
         </div>
+      )}
 
-        {/* <div className="embla__dots">
+      {!hideControls && (
+        <div className="embla__controls">
+          <div
+            className={`embla__buttons ${slides?.length < 2 ? "pointer-events-none opacity-0" : ""}`}
+          >
+            <PrevButton
+              disabled={prevBtnDisabled}
+              onClick={onPrevButtonClick}
+            />
+            <NextButton
+              disabled={nextBtnDisabled}
+              onClick={onNextButtonClick}
+            />
+          </div>
+
+          {/* <div className="embla__dots">
           {scrollSnaps.map((_, index) => (
             <DotButton
               key={index}
@@ -70,7 +105,8 @@ const Carousel: React.FC<PropType> = (props) => {
             />
           ))}
         </div> */}
-      </div>
+        </div>
+      )}
     </section>
   );
 };
