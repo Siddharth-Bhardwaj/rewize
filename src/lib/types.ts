@@ -14,3 +14,15 @@ export type CardDetails = {
   networkType?: string | null;
   description?: string | null;
 };
+
+export type CardRecommendation = {
+  cardId: string;
+  cardName: string;
+  categoryName: string;
+  issuer: string | null;
+  message: string | null;
+  nickName: string | null;
+  imageUrl: string | null;
+  rewardRate: string | null;
+  lastFourDigits: string | null;
+};
