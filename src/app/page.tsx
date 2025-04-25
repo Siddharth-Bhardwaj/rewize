@@ -17,27 +17,6 @@ export default function HomePage() {
       <Link href="/dashboard">
         <Button>Get Started</Button>
       </Link>
-
-      {/* <div className="flex gap-x-8">
-        <CardDetailsContainer />
-      </div> */}
     </PageContainer>
-
-    // <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white"></main>
-    // <main className="bg-background text-primary flex min-h-screen flex-col items-center justify-center">
-    //   {/* <h2 className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-2 bg-gradient-to-b from-neutral-800 via-white to-white bg-clip-text text-center text-3xl font-medium tracking-tight text-transparent md:flex-row md:gap-8 md:text-5xl md:leading-tight">
-    //     <span>Shooting Star</span>
-    //     <span className="text-lg font-thin text-white">x</span>
-    //     <span>Star Background</span>
-    //   </h2> */}
-
-    //   {/* <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-2 bg-gradient-to-b from-neutral-800 via-white to-white bg-clip-text text-center text-3xl font-medium tracking-tight text-transparent md:flex-row md:gap-8 md:text-5xl md:leading-tight">
-    //     <Carousel slides={[1, 2, 3]} options={{ align: "start" }} />
-    //   </div> */}
-
-    //   <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-2 bg-gradient-to-b from-neutral-800 to-white bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent sm:bg-gradient-to-t md:gap-8 md:text-6xl md:leading-tight">
-    //     {/* <GlareCard bgImage="/amex-gold.png" />
-    //     <GlareCard bgImage="/BofA-default.jpeg" />
-    //     <GlareCard bgImage="/chase-freedom-unlimited.png" /> */}
   );
 }

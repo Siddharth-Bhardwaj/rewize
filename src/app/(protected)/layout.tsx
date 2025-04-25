@@ -13,7 +13,7 @@ const ProtectedPathLayout = async ({
     redirect("/auth/login");
   }
 
-  return children;
+  return <div className="bg-white">{children}</div>;
 };
 
 export default ProtectedPathLayout;
