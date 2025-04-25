@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, inArray } from "drizzle-orm";
 
 import { db } from "@/server/db";
 import { auth } from "@/server/auth";
@@ -7,7 +7,7 @@ import { cardRewards, userCards } from "@/server/db/schema";
 
 // Define validation schema for recommendation input
 const recommendationSchema = z.object({
-  categoryId: z.string().min(1),
+  categoryIds: z.array(z.string()).min(1),
 });
 
 export async function POST(request: Request) {
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     const session = await auth();
     const userId = session?.user?.id;
     const body: unknown = await request.json();
-    const { categoryId } = recommendationSchema.parse(body);
+    const { categoryIds } = recommendationSchema.parse(body);
 
     if (!userId) {
       return Response.json({ error: "User ID is required" }, { status: 400 });
@@ -33,19 +33,21 @@ export async function POST(request: Request) {
     if (!userCardsList?.length) {
       return Response.json({
         message:
-          "You don't have any cards yet. Add cards to get recommendations.",
+          "You don't have any cards yet. Add cards to get recommendations!",
       });
     }
 
-    // Get card IDs
-    const cardIds = userCardsList.map((uc) => uc.cardId);
+    // Get card IDs and store in map for faster lookup
+    const userCardMap = new Map(userCardsList.map((uc) => [uc.cardId, uc]));
+    const cardIds = Array.from(userCardMap.keys());
 
     // Find the best card for the category
-    const bestRewards = await db.query.cardRewards.findMany({
+    const bestUserRewards = await db.query.cardRewards.findMany({
       where: and(
-        eq(cardRewards.categoryId, categoryId)
-        // Only include cards the user has
-        // This is simplified - in SQL we'd use "IN" but here we're just finding all matching rewards
+        inArray(cardRewards.categoryId, categoryIds),
+        inArray(cardRewards.cardId, cardIds)
+        // Only include cards the user has AND
+        // match any of the provided category IDs
       ),
       with: {
         card: true,
@@ -54,43 +56,58 @@ export async function POST(request: Request) {
       orderBy: [desc(cardRewards.rewardRate)],
     });
 
-    // Filter to only cards the user owns and get the best one
-    const userRewards = bestRewards.filter((reward) =>
-      cardIds.includes(reward.cardId)
-    );
+    // const uniqueCardsMap = new Map();
 
-    if (!userRewards?.length) {
+    // for (const reward of bestRewards) {
+    //   if (!uniqueCardsMap.has(reward.cardId)) {
+    //     uniqueCardsMap.set(reward.cardId, reward);
+    //   }
+    // }
+
+    // const uniqueUserRewards = Array.from(uniqueCardsMap.values());
+
+    // Filter to only cards the user owns and get the best one
+    // const userRewards = bestRewards.filter((reward) =>
+    //   cardIds.includes(reward.cardId)
+    // );
+
+    if (!bestUserRewards?.length) {
       return Response.json({
-        message: "None of your cards offer rewards for this category.",
+        message: "None of your cards offer rewards for this category!",
       });
     }
 
     // Get the best card (highest reward rate)
-    const bestCard = userRewards[0];
+    // const bestCard = userRewards[0];
 
-    if (!bestCard) {
-      return Response.json({
-        message: "Could not determine the best card for this category.",
-      });
-    }
+    // if (!bestCard) {
+    //   return Response.json({
+    //     message: "Could not determine the best card for this category.",
+    //   });
+    // }
 
     // Find the user card details to get last 4 digits etc.
-    const userCardDetails = userCardsList.find(
-      (uc) => uc.cardId === bestCard.cardId
-    );
+    // const userCardDetails = userCardsList.filter(
+    //   (uc) => uc.cardId === bestCard.cardId
+    // );
 
-    return Response.json({
-      recommendation: {
-        cardId: bestCard.cardId,
-        cardName: bestCard.card.name,
-        issuer: bestCard.card.issuer,
-        lastFourDigits: userCardDetails?.lastFourDigits ?? null,
-        nickName: userCardDetails?.nickName ?? null,
-        categoryName: bestCard.category.name,
-        rewardRate: bestCard.rewardRate,
-        message: `Use your ${bestCard.card.issuer} ${bestCard.card.name} for ${bestCard.rewardRate}% back on ${bestCard.category.name}`,
-      },
+    const recommendations = bestUserRewards.map((reward) => {
+      const userCard = userCardMap.get(reward.cardId);
+
+      return {
+        cardId: reward.cardId,
+        cardName: reward.card.name,
+        issuer: reward.card.issuer,
+        lastFourDigits: userCard?.lastFourDigits ?? null,
+        nickName: userCard?.nickName ?? null,
+        categoryName: reward.category.name,
+        rewardRate: reward.rewardRate,
+        imageUrl: reward.card.imageUrl,
+        message: `Use your ${reward.card.name} for ${reward.rewardRate}% back on ${reward.category.name}`,
+      };
     });
+
+    return Response.json({ recommendations });
   } catch (error) {
     // Handle validation errors
     if (error instanceof z.ZodError) {

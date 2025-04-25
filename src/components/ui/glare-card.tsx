@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
+
 import { cn } from "@/lib/utils";
 
 const containerStyle: Record<string, string> = {
@@ -126,7 +128,14 @@ export const GlareCard = ({
               className
             )}
           >
-            <img alt="card" src={image} className="h-auto w-full rounded-lg" />
+            <Image
+              alt="card"
+              width={210}
+              height={331}
+              loading="eager"
+              src={image ?? ""}
+              className="h-auto w-full rounded-lg"
+            />
           </div>
           <div className="absolute inset-0 z-[1] rounded-[var(--radius)] bg-black/20" />
         </div>
