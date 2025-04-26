@@ -40,7 +40,7 @@ const PopUp: React.FC<PopupProps> = ({ open, children, className }) => {
               boxShadow:
                 "0 0 0 14px #121212, 0 0 0 17px #232323, 0 20px 40px rgba(0, 0, 0, 0.8)",
             }}
-            className="bg-background absolute flex w-full flex-col shadow-2xl max-md:rounded-t-2xl max-md:p-4 max-sm:shadow-none md:h-full md:rounded-4xl lg:h-[600px] lg:w-[300px] 2xl:h-[812px] 2xl:w-[375px]"
+            className="bg-background absolute flex flex-col shadow-2xl max-md:w-full max-md:rounded-t-2xl max-md:p-4 max-sm:shadow-none md:h-[550px] md:w-[275px] md:rounded-4xl lg:h-[600px] lg:w-[300px] 2xl:h-[812px] 2xl:w-[375px]"
           >
             <div className="bg-surface flex h-full w-full flex-col items-center gap-y-4 p-4 max-md:rounded-t-2xl md:rounded-4xl">
               <div

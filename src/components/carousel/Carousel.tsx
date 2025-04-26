@@ -45,7 +45,13 @@ const Carousel: React.FC<PropType> = (props) => {
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
           {/* TODO: fix animation */}
-          {loading && <LoadingCard />}
+          {loading && (
+            <div className="embla__slide">
+              <div className="embla__slide__number">
+                <LoadingCard />
+              </div>
+            </div>
+          )}
 
           {!loading &&
             slides.map((card: Slide | undefined, index) => {
