@@ -27,6 +27,7 @@ export const users = createTable("user", (d) => ({
     .default(sql`CURRENT_TIMESTAMP`),
   image: d.varchar({ length: 255 }),
   password: d.varchar({ length: 255 }),
+  savings: d.numeric("savings", { precision: 10, scale: 2 }).default("0.00"),
 }));
 
 // Credit Card Types/Products table
@@ -66,7 +67,7 @@ export const categories = createTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   }),
-  (t) => [index("category_name_idx").on(t.name)],
+  (t) => [index("category_name_idx").on(t.name)]
 );
 
 // Card Rewards - linking cards to categories with reward rates
@@ -101,7 +102,7 @@ export const cardRewards = createTable(
     index("reward_card_idx").on(t.cardId),
     index("reward_category_idx").on(t.categoryId),
     index("card_category_idx").on(t.cardId, t.categoryId), // Composite index
-  ],
+  ]
 );
 
 // User's Credit Cards
@@ -135,7 +136,7 @@ export const userCards = createTable(
   (t) => [
     index("user_cards_idx").on(t.userId),
     index("user_card_unique_idx").on(t.userId, t.cardId, t.lastFourDigits), // To prevent duplicates
-  ],
+  ]
 );
 
 // Relations
@@ -194,7 +195,7 @@ export const accounts = createTable(
   (t) => [
     primaryKey({ columns: [t.provider, t.providerAccountId] }),
     index("account_user_id_idx").on(t.userId),
-  ],
+  ]
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -211,7 +212,7 @@ export const sessions = createTable(
       .references(() => users.id),
     expires: d.timestamp({ mode: "date", withTimezone: true }).notNull(),
   }),
-  (t) => [index("t_user_id_idx").on(t.userId)],
+  (t) => [index("t_user_id_idx").on(t.userId)]
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -225,5 +226,5 @@ export const verificationTokens = createTable(
     token: d.varchar({ length: 255 }).notNull(),
     expires: d.timestamp({ mode: "date", withTimezone: true }).notNull(),
   }),
-  (t) => [primaryKey({ columns: [t.identifier, t.token] })],
+  (t) => [primaryKey({ columns: [t.identifier, t.token] })]
 );
