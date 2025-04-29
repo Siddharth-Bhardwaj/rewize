@@ -15,6 +15,7 @@ import Select, { type Option } from "@/components/ui/select";
 import LabelInputContainer from "@/components/LabelInputContainer";
 
 import type { CardDetails } from "@/lib/types";
+import { showErrorToast, showSuccessToast } from "@/lib/toastFunctions";
 
 const RenderIcon = () => {
   return <FaCreditCard />;
@@ -55,10 +56,17 @@ const AddCardPage = () => {
   const handleSave = async () => {
     try {
       if (!cardData?.id) return;
+      setLoading(true);
 
       const payload = { cardId: cardData?.id };
       await axios.post("/api/user/card", payload);
-    } catch (error) {}
+
+      showSuccessToast("Card has been added to your wallet!");
+    } catch (error) {
+      showErrorToast("Card could not be added to your wallet!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,7 +117,13 @@ const AddCardPage = () => {
               </LabelInputContainer>
             </div>
 
-            <PrimaryButton handleClick={handleSave}>Save Card</PrimaryButton>
+            <PrimaryButton
+              loading={loading}
+              disabled={loading}
+              handleClick={handleSave}
+            >
+              Save Card
+            </PrimaryButton>
           </div>
         </Container>
 
