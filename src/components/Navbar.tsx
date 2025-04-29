@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
+import ProfilePicture from "./ProfilePicture";
+
 const Navbar = () => {
   const { data: session } = useSession();
 
@@ -17,14 +19,10 @@ const Navbar = () => {
 
       <div className="flex items-center gap-x-6">
         <Link href="/about-us">
-          <span className="">About Us</span>
+          <span className="font-medium tracking-wide md:text-lg">About Us</span>
         </Link>
 
-        {session && (
-          <Link href="/how-to-use">
-            <span className="">Demo</span>
-          </Link>
-        )}
+        {session && <ProfilePicture user={session?.user} />}
       </div>
     </div>
   );

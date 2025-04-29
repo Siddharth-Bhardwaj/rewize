@@ -2,7 +2,6 @@
 
 import React, { Fragment } from "react";
 import { motion } from "motion/react";
-import useMobile from "@/hooks/useMobile";
 
 const steps = [
   { label: "Add Your Cards", emoji: "💳" },
@@ -41,9 +40,6 @@ const verticalStep = {
 };
 
 const HowToUseWizard = () => {
-  const isMobile = useMobile();
-  console.log(isMobile);
-
   return (
     <motion.div
       variants={container}
