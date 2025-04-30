@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { eq } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
@@ -11,6 +10,7 @@ import {
   users,
   verificationTokens,
 } from "@/server/db/schema";
+import { env } from "@/env";
 import { db } from "@/server/db";
 
 /**
@@ -34,11 +34,6 @@ declare module "next-auth" {
   // }
 }
 
-const userUpdateSchema = z.object({
-  name: z.string().max(100),
-  image: z.string().url().optional().or(z.literal("")),
-});
-
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -48,6 +43,14 @@ const userUpdateSchema = z.object({
 export const authConfig = {
   session: {
     strategy: "jwt",
+  },
+  cookies: {
+    sessionToken: {
+      name:
+        env.NEXT_PUBLIC_NODE_ENV === "production"
+          ? "__Secure-authjs.session-token"
+          : "next-auth.session-token",
+    },
   },
   providers: [
     CredentialsProvider({
