@@ -18,6 +18,7 @@ export type CardDetails = {
 export type CardRecommendation = {
   cardId: string;
   cardName: string;
+  categoryId: string;
   categoryName: string;
   issuer: string | null;
   message: string | null;
