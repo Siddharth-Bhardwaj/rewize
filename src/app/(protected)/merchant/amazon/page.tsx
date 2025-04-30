@@ -1,24 +1,31 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { FiX } from "react-icons/fi";
 import { FaApple } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 import { FaRegFaceSadCry } from "react-icons/fa6";
 
 import PopUp from "@/components/PopUp";
+import Button from "@/components/ui/button";
 import Carousel from "@/components/carousel/Carousel";
 
 import type { CardRecommendation } from "@/lib/types";
+import { showErrorToast, showSuccessToast } from "@/lib/toastFunctions";
 
 const Amazon = () => {
+  const cartValue = 880;
   const categoryIds = ["b1225fce-2154-43ec-b6e3-65ae44a7a9a3"];
+
+  const router = useRouter();
 
   const [recommendedCards, setRecommendedCards] =
     useState<CardRecommendation[]>();
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [index, setIndex] = useState<number | null>(null);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
@@ -41,6 +48,7 @@ const Amazon = () => {
         const recommendations = res?.data?.recommendations;
 
         if (recommendations) {
+          setIndex(0);
           setRecommendedCards(recommendations);
         } else if (message) {
           setMessage(message);
@@ -53,6 +61,37 @@ const Amazon = () => {
 
     void getRecommendedCard();
   }, []);
+
+  const handlePayment = useCallback(async () => {
+    try {
+      if (index === null || isNaN(index)) {
+        showErrorToast("Payment failed");
+        return;
+      }
+
+      const card = recommendedCards?.[index];
+
+      if (!card) {
+        showErrorToast("Payment failed");
+        return;
+      }
+
+      const payload = {
+        cartValue,
+        cardId: card.cardId,
+        categoryId: card.categoryId,
+      };
+      await axios.post("/api/user/savings", payload);
+
+      showSuccessToast("Payment Successful!");
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+    } catch (error) {
+      showErrorToast("Payment Unsuccessful!");
+    }
+  }, [router, index, recommendedCards]);
 
   const togglePopup = () => setShowPopup((prev) => !prev);
 
@@ -84,8 +123,20 @@ const Amazon = () => {
           <Carousel
             hideControls
             loading={loading}
+            setIndex={setIndex}
             slides={recommendedCards ?? []}
-          />
+          >
+            <div className="mt-4 flex w-full justify-center">
+              <Button
+                hideIcon
+                loading={loading}
+                disabled={loading}
+                handleClick={handlePayment}
+              >
+                Pay with Card
+              </Button>
+            </div>
+          </Carousel>
         )}
       </PopUp>
 

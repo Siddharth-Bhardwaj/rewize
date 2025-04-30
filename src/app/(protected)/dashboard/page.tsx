@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { FiPlus } from "react-icons/fi";
-import { useSession } from "next-auth/react";
 
+import Loader from "@/components/Loader";
 import Button from "@/components/ui/button";
 import Container from "@/components/Container";
 import Carousel from "@/components/carousel/Carousel";
@@ -17,10 +17,12 @@ type GetAllCardsResponse = {
   cards: CardDetails[];
 };
 
-const DashboardPage = () => {
-  const { data: session } = useSession();
-  console.log(session, "sesh");
+type GetSavingsResponse = {
+  savings: string;
+};
 
+const DashboardPage = () => {
+  const [savings, setSavings] = useState<string>("0");
   const [loading, setLoading] = useState<boolean>(true);
   const [myCards, setMyCards] = useState<CardDetails[] | null>([]);
 
@@ -39,7 +41,21 @@ const DashboardPage = () => {
       }
     };
 
+    const fetchSavings = async () => {
+      try {
+        setLoading(true);
+
+        const res = await axios.get<GetSavingsResponse>("/api/user/savings");
+
+        setSavings(res?.data?.savings);
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    };
+
     void fetchCards();
+    void fetchSavings();
   }, []);
 
   return (
@@ -50,9 +66,15 @@ const DashboardPage = () => {
             <div className="border-border md:p4 flex w-full flex-1 flex-col justify-between gap-y-4 rounded-xl border-2 p-4">
               <h3 className="text-2xl font-medium tracking-wide">My Savings</h3>
 
-              <span className="text-right text-[180px] font-medium md:text-[200px] lg:text-[240px]">
-                $0
-              </span>
+              {loading ? (
+                <div className="flex flex-1 items-center justify-center">
+                  <Loader />
+                </div>
+              ) : (
+                <span className="text-right text-[180px] font-medium md:text-[200px] lg:text-[240px]">
+                  {`$${savings}`}
+                </span>
+              )}
             </div>
           </Container>
 
