@@ -5,14 +5,21 @@ import axios from "axios";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { FiArrowRight } from "react-icons/fi";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import Label from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import LabelInputContainer from "@/components/LabelInputContainer";
 
+import { showErrorToast } from "@/lib/toastFunctions";
+
+type ErrorResponse = {
+  error: { message: string }[];
+};
+
 const SignupLayout = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("callbackUrl") ?? "/dashboard";
 
@@ -37,13 +44,29 @@ const SignupLayout = () => {
 
       await axios.post("/api/auth/signup", formData);
 
-      void signIn("credentials", {
+      const loginRes = await signIn("credentials", {
         email,
         password,
-        redirectTo,
         redirect: false,
       });
-    } catch (error) {
+
+      if (!loginRes?.error && loginRes?.ok && loginRes?.url) {
+        router.push(redirectTo);
+      } else {
+        showErrorToast("Invalid email or password");
+      }
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        const res = error?.response?.data as ErrorResponse;
+
+        if (res?.error?.[0]?.message) {
+          showErrorToast(res.error[0].message);
+        } else {
+          showErrorToast("Unexpected error occurred.");
+        }
+      } else {
+        showErrorToast("Unexpected error.");
+      }
     } finally {
       setLoading(false);
     }

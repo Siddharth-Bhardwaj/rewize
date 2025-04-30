@@ -34,7 +34,7 @@ const ProfilePicture: React.FC<ProfilePicProps> = ({ user }) => {
         width={32}
         height={32}
         src={user.image}
-        className="h-full w-full object-cover"
+        className="h-full w-full object-cover object-center"
       />
     </Wrapper>
   );

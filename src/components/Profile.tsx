@@ -111,7 +111,7 @@ const Profile = () => {
                 height={188}
                 src={image}
                 alt="profile pic"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover object-center"
               />
             ) : (
               <FiUser size="7rem" strokeWidth={1.2} />
