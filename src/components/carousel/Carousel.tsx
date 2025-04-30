@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, type Dispatch, type SetStateAction } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { type EmblaOptionsType } from "embla-carousel";
 
@@ -20,14 +20,24 @@ type PropType = {
   loading?: boolean;
   className?: string;
   hideControls?: boolean;
+  children?: React.ReactNode;
   options?: EmblaOptionsType;
   slides: (CardDetails | CardRecommendation)[];
+  setIndex?: Dispatch<SetStateAction<number | null>>;
 };
 
 type Slide = CardDetails | CardRecommendation;
 
 const Carousel: React.FC<PropType> = (props) => {
-  const { slides, options, loading, className, hideControls } = props;
+  const {
+    slides,
+    options,
+    loading,
+    children,
+    setIndex,
+    className,
+    hideControls,
+  } = props;
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
 
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
@@ -39,6 +49,10 @@ const Carousel: React.FC<PropType> = (props) => {
     onPrevButtonClick,
     onNextButtonClick,
   } = usePrevNextButtons(emblaApi);
+
+  useEffect(() => {
+    if (setIndex) setIndex(selectedIndex);
+  }, [selectedIndex]);
 
   return (
     <section className={cn("embla", "w-full", className)}>
@@ -113,6 +127,8 @@ const Carousel: React.FC<PropType> = (props) => {
         </div> */}
         </div>
       )}
+
+      {children}
     </section>
   );
 };

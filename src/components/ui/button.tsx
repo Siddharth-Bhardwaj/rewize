@@ -1,15 +1,31 @@
 import React, { type PropsWithChildren } from "react";
 
-const Button: React.FC<PropsWithChildren & { hideIcon?: boolean }> = ({
-  children,
-  hideIcon,
-}) => {
+import Loader from "../Loader";
+
+const Button: React.FC<
+  PropsWithChildren & {
+    loading?: boolean;
+    disabled?: boolean;
+    hideIcon?: boolean;
+    handleClick?: () => void;
+  }
+> = ({ disabled, loading, children, hideIcon, handleClick }) => {
   return (
-    <button className="group bg-surface text-primary relative inline-block cursor-pointer rounded-full p-px text-sm leading-6 font-medium no-underline shadow-2xl shadow-black">
+    <button
+      disabled={disabled}
+      onClick={handleClick}
+      className="group bg-surface text-primary relative inline-block cursor-pointer rounded-full p-px text-sm leading-6 font-medium no-underline shadow-2xl shadow-black disabled:cursor-pointer disabled:opacity-70"
+    >
       <span className="absolute inset-0 overflow-hidden rounded-full">
         <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,#f8ff3d_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </span>
-      <div className="bg-background relative z-10 flex items-center space-x-2 rounded-full px-4 py-1 ring-1 ring-white/[9%]">
+      <div className="bg-background relative z-10 flex items-center space-x-2 overflow-hidden rounded-full px-4 py-1 ring-1 ring-white/[9%]">
+        {loading && (
+          <div className="bg-background absolute inset-0 z-10 flex h-full w-full items-center justify-center">
+            <Loader className="h-4 w-4" />
+          </div>
+        )}
+
         <span className="tracking-wide">{children}</span>
 
         {!hideIcon && (
