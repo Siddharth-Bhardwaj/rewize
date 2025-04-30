@@ -8,7 +8,7 @@ export const env = createEnv({
    */
   server: {
     AUTH_SECRET:
-      process.env.NODE_ENV === "production"
+      process.env.NEXT_PUBLIC_NODE_ENV === "production"
         ? z.string()
         : z.string().optional(),
     DATABASE_URL: z.string().url(),
@@ -16,7 +16,7 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     NEXTAUTH_SECRET:
-      process.env.NODE_ENV === "production"
+      process.env.NEXT_PUBLIC_NODE_ENV === "production"
         ? z.string()
         : z.string().optional(),
     NEXTAUTH_URL: z.preprocess(
