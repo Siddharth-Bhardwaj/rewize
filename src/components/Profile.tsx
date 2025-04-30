@@ -21,7 +21,7 @@ const Profile = () => {
   const [file, setFile] = useState<File | null>(null);
   const [editing, setEditing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [name, setName] = useState<string>(session?.user.name ?? "");
+  const [name, setName] = useState<string>(session?.user?.name ?? "");
 
   const inputRef = useRef<HTMLInputElement>(null);
 
