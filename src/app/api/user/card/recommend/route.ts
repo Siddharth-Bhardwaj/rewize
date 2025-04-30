@@ -98,11 +98,12 @@ export async function POST(request: Request) {
         cardId: reward.cardId,
         cardName: reward.card.name,
         issuer: reward.card.issuer,
-        lastFourDigits: userCard?.lastFourDigits ?? null,
-        nickName: userCard?.nickName ?? null,
-        categoryName: reward.category.name,
         rewardRate: reward.rewardRate,
         imageUrl: reward.card.imageUrl,
+        categoryId: reward.category.id,
+        categoryName: reward.category.name,
+        nickName: userCard?.nickName ?? null,
+        lastFourDigits: userCard?.lastFourDigits ?? null,
         message: `Use your ${reward.card.name} for ${reward.rewardRate}% back on ${reward.category.name}`,
       };
     });
