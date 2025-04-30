@@ -39,3 +39,28 @@ export const contributors = [
     ],
   },
 ];
+
+export const merchants = [
+  {
+    title: "Amazon",
+    description: "A multinational technology company focusing on e-commerce",
+    link: "/merchant/amazon",
+  },
+  {
+    title: "ByteBites",
+    description:
+      "Order takeout or dine in with ease — flavor meets convenience.",
+    link: "/merchant/byte-bites",
+  },
+  {
+    title: "FreshMart",
+    description:
+      "Your go-to destination for fresh groceries and daily essentials.",
+    link: "/merchant/fresh-mart",
+  },
+  {
+    title: "JetPath",
+    description: "Seamless travel bookings for wherever you're headed next.",
+    link: "/merchant/jetpath",
+  },
+];
