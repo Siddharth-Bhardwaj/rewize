@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
@@ -44,14 +45,14 @@ export const authConfig = {
   session: {
     strategy: "jwt",
   },
-  cookies: {
-    sessionToken: {
-      name:
-        env.NEXT_PUBLIC_NODE_ENV === "production"
-          ? "__Secure-authjs.session-token"
-          : "next-auth.session-token",
-    },
-  },
+  // cookies: {
+  //   sessionToken: {
+  //     name:
+  //       env.NEXT_PUBLIC_NODE_ENV === "production"
+  //         ? "__Secure-authjs.session-token"
+  //         : "next-auth.session-token",
+  //   },
+  // },
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -131,6 +132,21 @@ export const authConfig = {
       }
 
       return token;
+    },
+    authorized: async ({ auth, request }) => {
+      const { pathname } = request.nextUrl;
+
+      if (!auth && !pathname?.includes("/auth")) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/auth/login";
+        return NextResponse.redirect(url);
+      } else if (!!auth && pathname?.includes("/auth")) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/dashboard";
+        return NextResponse.redirect(url);
+      }
+
+      return true;
     },
   },
 } satisfies NextAuthConfig;
